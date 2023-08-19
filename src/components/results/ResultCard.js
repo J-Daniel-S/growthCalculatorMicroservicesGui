@@ -71,7 +71,7 @@ const ResultCard = (props) => {
               <th>Ticker</th>
               <th>Market</th>
               <th>Discounted</th>
-              <th>Avg growth %</th>
+              <th>Average growth %</th>
             </tr>
           </thead>
           <tbody>

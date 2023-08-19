@@ -33,7 +33,7 @@ const HowToStock = () => {
           <span style={field}>
             <strong>Operations cash flow and Capital expenditures:</strong>
           </span>{" "}
-          If you want to get your own numbers feel free to enter those numbers
+          If you want to get your own numbers feel free to enter those numbers.  Enter capital expenditures as a positive number.
           <br></br>
           <span style={field}><strong>Free cash flow:</strong></span> When the new tab opens, the
           values on the very bottom of the table (labeled Free Cash Flow) can be

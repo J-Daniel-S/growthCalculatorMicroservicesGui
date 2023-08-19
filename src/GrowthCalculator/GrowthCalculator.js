@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "./GrowthCalculator.css";
 import { Container, CardGroup, Row } from "react-bootstrap";
-import axios from "axios";
 
 import FixedCard from "../components/fixedAssets/FixedCard";
 import StockCard from "../components/stocks/StockCard";
@@ -39,7 +38,7 @@ const GrowthCalculator = (props) => {
     let principle = Number.parseInt(form.principle.value);
     const iLength = Number.parseInt(form.investmentLength.value) / 12;
     let compound = form.compound.value;
-    let rate = form.rate.value;
+    let rate = form.rate.value/100;
     let amount;
 
     if (form.amount) {
@@ -64,28 +63,13 @@ const GrowthCalculator = (props) => {
         compound = 365;
       }
 
-      const headers = {
-        "Content-type": "application/json",
-        "Access-Control-Allow-Origin": "localhost:3000/",
-        "Access-Control-Allow-Methods": "POST",
-      };
-
-      const body = {
-        principle: principle,
-        interestRate: rate,
-        iLength: iLength,
-        compoundFrequency: compound,
-      };
-
-      axios
-        .post("http://localhost:8080/compound-calculator/savings", body, {
-          headers,
-        })
-        .then((res) => {
-          assets.push(res.data);
-          setFixedState([...assets]);
-          fixedState.map((asset) => console.log(asset));
-        });
+      fetch(
+        `http://localhost:8765/fixed-asset-provider/?principle=${principle}&interest=${rate}&length=${iLength}&compoundFrequency=${compound}`
+      ).then(res => res.json()).then(res => {
+        assets.push(res);
+        setFixedState([...assets]);
+        fixedState.map((asset) => console.log(asset));
+      });
     }
   };
 
@@ -116,11 +100,6 @@ const GrowthCalculator = (props) => {
     } else if (shares <= 0) {
       alert("Are you sure that's the correct number of shares?");
     } else {
-      const headers = {
-        "Content-type": "application/json",
-        "Access-Control-Allow-Origin": "localhost:3000/",
-        "Access-Control-Allow-Methods": "POST",
-      };
 
       let body;
 
@@ -142,9 +121,10 @@ const GrowthCalculator = (props) => {
         const fcf = [fcf5, fcf4, fcf3, fcf2, fcf1];
 
         if (growth) {
-          url = "http://localhost:8080/compound-calculator/stock-fcf/" + growth;
+          growth += 100;
+          url = "http://localhost:8765/stock-provider/fcf/" + growth;
         } else {
-          url = "http://localhost:8080/compound-calculator/stock-fcf";
+          url = "http://localhost:8765/stock-provider/fcf";
         }
 
         body = {
@@ -155,11 +135,25 @@ const GrowthCalculator = (props) => {
           freeCashFlow: fcf,
           ticker: ticker.toUpperCase(),
         };
+        console.log("pre-request body:")
+        console.log(body);
 
-        axios.post(url, body, { headers }).then((res) => {
-          stocks.push(res.data);
+        fetch(
+          url,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+          }
+        ).then(res => res.json()).then(res=> {
+          console.log("response:");
+          console.log(res);
+          stocks.push(res);
           setStockState([...stocks]);
-        });
+        }).catch(err => console.log(err));
+
       } else {
         let cf1;
         let cf2;
@@ -188,10 +182,12 @@ const GrowthCalculator = (props) => {
         const capex = [capex5, capex4, capex3, capex2, capex1];
 
         if (growth) {
-          url = "http://localhost:8080/compound-calculator/stock/" + growth;
+          growth += 100;
+          url = "http://localhost:8765/stock-provider/" + growth;
         } else {
-          url = "http://localhost:8080/compound-calculator/stock";
+          url = "http://localhost:8765/stock-provider";
         }
+
 
         body = {
           desiredReturn: roi,
@@ -203,10 +199,24 @@ const GrowthCalculator = (props) => {
           ticker: ticker.toUpperCase(),
         };
 
-        axios.post(url, body, { headers }).then((res) => {
-          stocks.push(res.data);
+        console.log("pre-request body:")
+        console.log(body);
+
+        fetch(
+          url,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body),
+          }
+        ).then(res => res.json()).then(res=> {
+          console.log("response:");
+          console.log(res);
+          stocks.push(res);
           setStockState([...stocks]);
-        });
+        }).catch(err => console.log(err));
       }
     }
   };

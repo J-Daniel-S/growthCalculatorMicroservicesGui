@@ -4,6 +4,7 @@ import Fcf from "./stockElements/Fcf";
 import OpsCashFlow from "./stockElements/OpsCashFlow";
 
 const StockCard = (props) => {
+  
   const [fcf, setFcf] = useState(true);
   const [mosState, setMosState] = useState(false);
   const [growthState, setGrowthState] = useState(false);
